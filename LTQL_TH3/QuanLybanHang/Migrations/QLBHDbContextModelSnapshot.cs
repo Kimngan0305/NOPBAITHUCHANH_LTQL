@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using QuanLybanHang.Data;
+using QuanLyBanHang.Data;
 
 #nullable disable
 
-namespace QuanLybanHang.Migrations
+namespace QuanLyBanHang.Migrations
 {
     [DbContext(typeof(QLBHDbContext))]
     partial class QLBHDbContextModelSnapshot : ModelSnapshot
@@ -22,7 +22,7 @@ namespace QuanLybanHang.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("QuanLybanHang.Data.Hangsanxuat", b =>
+            modelBuilder.Entity("QuanLyBanHang.Data.HangSanXuat", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -34,16 +34,12 @@ namespace QuanLybanHang.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Tenhangsanxuat")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("ID");
 
                     b.ToTable("HangSanXuat");
                 });
 
-            modelBuilder.Entity("QuanLybanHang.Data.HoaDon", b =>
+            modelBuilder.Entity("QuanLyBanHang.Data.HoaDon", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -52,6 +48,7 @@ namespace QuanLybanHang.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<string>("GhiChuHoaDon")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("KhachHangID")
@@ -72,7 +69,7 @@ namespace QuanLybanHang.Migrations
                     b.ToTable("HoaDon");
                 });
 
-            modelBuilder.Entity("QuanLybanHang.Data.Hoadonchitiet", b =>
+            modelBuilder.Entity("QuanLyBanHang.Data.HoaDon_ChiTiet", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -101,7 +98,7 @@ namespace QuanLybanHang.Migrations
                     b.ToTable("HoaDon_ChiTiet");
                 });
 
-            modelBuilder.Entity("QuanLybanHang.Data.Khachhang", b =>
+            modelBuilder.Entity("QuanLyBanHang.Data.KhachHang", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -110,9 +107,11 @@ namespace QuanLybanHang.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<string>("DiaChi")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DienThoai")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("HoVaTen")
@@ -124,7 +123,7 @@ namespace QuanLybanHang.Migrations
                     b.ToTable("KhachHang");
                 });
 
-            modelBuilder.Entity("QuanLybanHang.Data.Loaisanpham", b =>
+            modelBuilder.Entity("QuanLyBanHang.Data.LoaiSanPham", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -141,7 +140,7 @@ namespace QuanLybanHang.Migrations
                     b.ToTable("LoaiSanPham");
                 });
 
-            modelBuilder.Entity("QuanLybanHang.Data.NhanVien", b =>
+            modelBuilder.Entity("QuanLyBanHang.Data.NhanVien", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -150,9 +149,11 @@ namespace QuanLybanHang.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<string>("DiaChi")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DienThoai")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("HoVaTen")
@@ -175,7 +176,7 @@ namespace QuanLybanHang.Migrations
                     b.ToTable("NhanVien");
                 });
 
-            modelBuilder.Entity("QuanLybanHang.Data.sanpham", b =>
+            modelBuilder.Entity("QuanLyBanHang.Data.SanPham", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -202,7 +203,6 @@ namespace QuanLybanHang.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("TenSanPham")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
@@ -214,15 +214,15 @@ namespace QuanLybanHang.Migrations
                     b.ToTable("SanPham");
                 });
 
-            modelBuilder.Entity("QuanLybanHang.Data.HoaDon", b =>
+            modelBuilder.Entity("QuanLyBanHang.Data.HoaDon", b =>
                 {
-                    b.HasOne("QuanLybanHang.Data.Khachhang", "KhachHang")
+                    b.HasOne("QuanLyBanHang.Data.KhachHang", "KhachHang")
                         .WithMany("HoaDon")
                         .HasForeignKey("KhachHangID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("QuanLybanHang.Data.NhanVien", "NhanVien")
+                    b.HasOne("QuanLyBanHang.Data.NhanVien", "NhanVien")
                         .WithMany("HoaDon")
                         .HasForeignKey("NhanVienID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -233,16 +233,16 @@ namespace QuanLybanHang.Migrations
                     b.Navigation("NhanVien");
                 });
 
-            modelBuilder.Entity("QuanLybanHang.Data.Hoadonchitiet", b =>
+            modelBuilder.Entity("QuanLyBanHang.Data.HoaDon_ChiTiet", b =>
                 {
-                    b.HasOne("QuanLybanHang.Data.HoaDon", "HoaDon")
+                    b.HasOne("QuanLyBanHang.Data.HoaDon", "HoaDon")
                         .WithMany("HoaDon_ChiTiet")
                         .HasForeignKey("HoaDonID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("QuanLybanHang.Data.sanpham", "SanPham")
-                        .WithMany("Hoadonchitiet")
+                    b.HasOne("QuanLyBanHang.Data.SanPham", "SanPham")
+                        .WithMany("HoaDon_ChiTiet")
                         .HasForeignKey("SanPhamID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -252,53 +252,53 @@ namespace QuanLybanHang.Migrations
                     b.Navigation("SanPham");
                 });
 
-            modelBuilder.Entity("QuanLybanHang.Data.sanpham", b =>
+            modelBuilder.Entity("QuanLyBanHang.Data.SanPham", b =>
                 {
-                    b.HasOne("QuanLybanHang.Data.Hangsanxuat", "Hangsanxuat")
-                        .WithMany("sanpham")
+                    b.HasOne("QuanLyBanHang.Data.HangSanXuat", "HangSanXuat")
+                        .WithMany("SanPham")
                         .HasForeignKey("HangSanXuatID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("QuanLybanHang.Data.Loaisanpham", "Loaisanpham")
-                        .WithMany("sanpham")
+                    b.HasOne("QuanLyBanHang.Data.LoaiSanPham", "LoaiSanPham")
+                        .WithMany("SanPham")
                         .HasForeignKey("LoaiSanPhamID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Hangsanxuat");
+                    b.Navigation("HangSanXuat");
 
-                    b.Navigation("Loaisanpham");
+                    b.Navigation("LoaiSanPham");
                 });
 
-            modelBuilder.Entity("QuanLybanHang.Data.Hangsanxuat", b =>
+            modelBuilder.Entity("QuanLyBanHang.Data.HangSanXuat", b =>
                 {
-                    b.Navigation("sanpham");
+                    b.Navigation("SanPham");
                 });
 
-            modelBuilder.Entity("QuanLybanHang.Data.HoaDon", b =>
+            modelBuilder.Entity("QuanLyBanHang.Data.HoaDon", b =>
                 {
                     b.Navigation("HoaDon_ChiTiet");
                 });
 
-            modelBuilder.Entity("QuanLybanHang.Data.Khachhang", b =>
+            modelBuilder.Entity("QuanLyBanHang.Data.KhachHang", b =>
                 {
                     b.Navigation("HoaDon");
                 });
 
-            modelBuilder.Entity("QuanLybanHang.Data.Loaisanpham", b =>
+            modelBuilder.Entity("QuanLyBanHang.Data.LoaiSanPham", b =>
                 {
-                    b.Navigation("sanpham");
+                    b.Navigation("SanPham");
                 });
 
-            modelBuilder.Entity("QuanLybanHang.Data.NhanVien", b =>
+            modelBuilder.Entity("QuanLyBanHang.Data.NhanVien", b =>
                 {
                     b.Navigation("HoaDon");
                 });
 
-            modelBuilder.Entity("QuanLybanHang.Data.sanpham", b =>
+            modelBuilder.Entity("QuanLyBanHang.Data.SanPham", b =>
                 {
-                    b.Navigation("Hoadonchitiet");
+                    b.Navigation("HoaDon_ChiTiet");
                 });
 #pragma warning restore 612, 618
         }

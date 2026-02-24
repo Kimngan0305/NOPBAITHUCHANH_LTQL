@@ -1,5 +1,4 @@
-﻿using QuanLybanHang.Data;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -8,95 +7,101 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using QuanLyBanHang.Data;
 
-namespace QuanLybanHang.Forms
+namespace QuanLyBanHang.Forms
 {
-   
     public partial class frmKhachHang : Form
     {
-        
-
         public frmKhachHang()
         {
             InitializeComponent();
         }
+
+
+
+
         QLBHDbContext context = new QLBHDbContext(); // Khởi tạo biến ngữ cảnh CSDL
         bool xuLyThem = false; // Kiểm tra có nhấn vào nút Thêm hay không?
-        int id;
+        int id; // Lấy mã khách hàng (dùng cho Sửa và Xóa)
+
         private void BatTatChucNang(bool giaTri)
         {
-            btnluu.Enabled = giaTri;
-            btnhuybo.Enabled = giaTri;
-            txthoten.Enabled = giaTri;
-            txtdienthoai.Enabled = giaTri;
-            txtdiachi.Enabled = giaTri;
-            btnthem.Enabled = !giaTri;
-            btnsua.Enabled = !giaTri;
-            btnxoa.Enabled = !giaTri;
-            btntimkiem.Enabled = !giaTri;
-            btnnhap.Enabled = !giaTri;
-            btnxuat.Enabled = !giaTri;
+            btnLuu.Enabled = giaTri;
+            btnHuyBo.Enabled = giaTri;
+            txtHoVaTen.Enabled = giaTri;
+            txtDienThoai.Enabled = giaTri;
+            txtDiaChi.Enabled = giaTri;
+            btnThem.Enabled = !giaTri;
+            btnSua.Enabled = !giaTri;
+            btnXoa.Enabled = !giaTri;
+            btnTimKiem.Enabled = !giaTri;
+            btnNhap.Enabled = !giaTri;
+            btnXuat.Enabled = !giaTri;
         }
-
         private void frmKhachHang_Load(object sender, EventArgs e)
         {
             BatTatChucNang(false);
-            List<Khachhang> kh = new List<Khachhang>();
+            List<KhachHang> kh = new List<KhachHang>();
             kh = context.KhachHang.ToList();
             BindingSource bindingSource = new BindingSource();
             bindingSource.DataSource = kh;
-            txthoten.DataBindings.Clear();
-            txthoten.DataBindings.Add("Text", bindingSource, "HoVaTen", false, DataSourceUpdateMode.Never);
+            txtHoVaTen.DataBindings.Clear();
+            txtHoVaTen.DataBindings.Add("Text", bindingSource, "HoVaTen", false, DataSourceUpdateMode.Never);
             // Tương tự cho txtDienThoai và txtDiaChi
-
-            txtdienthoai.DataBindings.Clear();
-            txtdienthoai.DataBindings.Add("Text", bindingSource, "DienThoai", false, DataSourceUpdateMode.Never);
-
-            txtdiachi.DataBindings.Clear();
-            txtdiachi.DataBindings.Add("Text", bindingSource, "DiaChi", false, DataSourceUpdateMode.Never);
-           
-            dvgdanhsachkhachhang.DataSource = bindingSource;
+            dataGridView.DataSource = bindingSource;
         }
 
-        private void btnthem_Click(object sender, EventArgs e)
-        {
-            xuLyThem = true;
-            BatTatChucNang(true);
-            txthoten.Clear();
-            txtdienthoai.Clear();
-            txtdiachi.Clear();
-        }
-
-        private void btnsua_Click(object sender, EventArgs e)
+        private void btnSua_Click(object sender, EventArgs e)
         {
             xuLyThem = false;
             BatTatChucNang(true);
-            id = Convert.ToInt32(dvgdanhsachkhachhang.CurrentRow.Cells["ID"].Value.ToString());
+            id = Convert.ToInt32(dataGridView.CurrentRow.Cells["ID"].Value.ToString());
         }
 
-        private void btnluu_Click(object sender, EventArgs e)
+        private void button2_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txthoten.Text))
+
+        }
+
+        private void btnThoat_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnThem_Click(object sender, EventArgs e)
+        {
+            xuLyThem = true;
+            BatTatChucNang(true);
+            txtHoVaTen.Clear();
+            txtDienThoai.Clear();
+            txtDiaChi.Clear();
+
+        }
+
+        private void btnLuu_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtHoVaTen.Text))
                 MessageBox.Show("Vui lòng nhập họ và tên khách hàng?", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             else
             {
                 if (xuLyThem)
                 {
-                    Khachhang kh = new Khachhang();
-                    kh.HoVaTen = txthoten.Text;
-                    kh.DienThoai = txtdienthoai.Text;
-                    kh.DiaChi = txtdiachi.Text;
+                    KhachHang kh = new KhachHang();
+                    kh.HoVaTen = txtHoVaTen.Text;
+                    kh.DienThoai = txtDienThoai.Text;
+                    kh.DiaChi = txtDiaChi.Text;
                     context.KhachHang.Add(kh);
                     context.SaveChanges();
                 }
                 else
                 {
-                    Khachhang kh = context.KhachHang.Find(ID);
+                    KhachHang kh = context.KhachHang.Find(id);
                     if (kh != null)
                     {
-                        kh.HoVaTen = txthoten.Text;
-                        kh.DienThoai = txtdienthoai.Text;
-                        kh.DiaChi = txtdiachi.Text;
+                        kh.HoVaTen = txtHoVaTen.Text;
+                        kh.DienThoai = txtDienThoai.Text;
+                        kh.DiaChi = txtDiaChi.Text;
                         context.KhachHang.Update(kh);
                         context.SaveChanges();
                     }
@@ -105,12 +110,12 @@ namespace QuanLybanHang.Forms
             }
         }
 
-        private void btnxoa_Click(object sender, EventArgs e)
+        private void btnXoa_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Xác nhận xóa khách hàng " + txthoten.Text + "?", "Xóa", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            if (MessageBox.Show("Xác nhận xóa khách hàng " + txtHoVaTen.Text + "?", "Xóa", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                id = Convert.ToInt32( dvgdanhsachkhachhang.CurrentRow.Cells["ID"].Value.ToString());
-                Khachhang kh = context.KhachHang.Find(ID);
+                id = Convert.ToInt32(dataGridView.CurrentRow.Cells["ID"].Value.ToString());
+                KhachHang kh = context.KhachHang.Find(id);
                 if (kh != null)
                 {
                     context.KhachHang.Remove(kh);
@@ -118,11 +123,17 @@ namespace QuanLybanHang.Forms
                 context.SaveChanges();
                 frmKhachHang_Load(sender, e);
             }
+
         }
 
-        private void btnhuybo_Click(object sender, EventArgs e)
+        private void btnHuyBo_Click(object sender, EventArgs e)
         {
             frmKhachHang_Load(sender, e);
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

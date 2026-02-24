@@ -5,15 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLybanHang.Data
+namespace QuanLyBanHang.Data
 {
-    public class Khachhang
+    public class KhachHang
     {
         public int ID { get; set; }
         public string HoVaTen { get; set; }
-        public string? DienThoai { get; set; }
-        public string? DiaChi { get; set; }
-
+        public string DienThoai { get; set; }
+        public string DiaChi { get; set; }
         public virtual ObservableCollectionListSource<HoaDon> HoaDon { get; } = new();
     }
 }

@@ -1,9 +1,6 @@
-using QuanLybanHang.Forms;
-using QuanLyBanHang.Forms;
+﻿using QuanLyBanHang.Forms; // Thêm dòng này vào đầu tiên
 
-
-
-namespace QuanLybanHang
+namespace QuanLyBanHang
 {
     internal static class Program
     {
@@ -11,10 +8,9 @@ namespace QuanLybanHang
         static void Main()
         {
             ApplicationConfiguration.Initialize();
+            // Đảm bảo tên class là frmLoaiSanPham
+            // Application.Run(new frmLoaiSanPham());
             Application.Run(new frmSanPham());
-          
-
-
         }
     }
 }

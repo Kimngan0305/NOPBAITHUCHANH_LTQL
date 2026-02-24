@@ -6,21 +6,27 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Configuration;
 
-namespace QuanLybanHang.Data
+namespace QuanLyBanHang.Data
 {
     public class QLBHDbContext : DbContext
     {
-        public DbSet<Loaisanpham> LoaiSanPham { get; set; }
-        public DbSet<Hangsanxuat> HangSanXuat { get; set; }
-        public DbSet<sanpham> SanPham { get; set; }
+        public DbSet<LoaiSanPham> LoaiSanPham { get; set; }
+        public DbSet<HangSanXuat> HangSanXuat { get; set; }
+        public DbSet<SanPham> SanPham { get; set; }
         public DbSet<NhanVien> NhanVien { get; set; }
-        public DbSet<Khachhang> KhachHang { get; set; }
+        public DbSet<KhachHang> KhachHang { get; set; }
         public DbSet<HoaDon> HoaDon { get; set; }
-        public DbSet<Hoadonchitiet> HoaDon_ChiTiet { get; set; }
-
+        public DbSet<HoaDon_ChiTiet> HoaDon_ChiTiet { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(ConfigurationManager.ConnectionStrings["QLBHConnection"].ConnectionString);
+            if (!optionsBuilder.IsConfigured)
+            {
+                // Dán trực tiếp chuỗi kết nối của bạn vào đây
+                optionsBuilder.UseSqlServer(
+                    @"Server=LAPTOP-IKIF59HJ\SQLEXPRESS;Database=QLBH1;Integrated Security=True;TrustServerCertificate=True",
+                    providerOptions => providerOptions.EnableRetryOnFailure() // Sửa lỗi Transient failure
+                );
+            }
         }
     }
 }

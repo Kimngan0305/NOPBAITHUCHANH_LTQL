@@ -1,5 +1,4 @@
-﻿using QuanLybanHang.Data;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -8,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using QuanLyBanHang.Data;
 using BC = BCrypt.Net.BCrypt;
-
-namespace QuanLybanHang.Forms
+namespace QuanLyBanHang.Forms
 {
     public partial class frmNhanVien : Form
     {
@@ -18,94 +17,97 @@ namespace QuanLybanHang.Forms
         {
             InitializeComponent();
         }
+
         QLBHDbContext context = new QLBHDbContext(); // Khởi tạo biến ngữ cảnh CSDL
         bool xuLyThem = false; // Kiểm tra có nhấn vào nút Thêm hay không?
-        int id;
+        int id; // Lấy mã nhân viên (dùng cho Sửa và Xóa)
+
+
         private void BatTatChucNang(bool giaTri)
         {
-            btnluu.Enabled = giaTri;
-            btnhuybo.Enabled = giaTri;
-            txthoten.Enabled = giaTri;
-            txtdienthoai.Enabled = giaTri;
-            txtdiachi.Enabled = giaTri;
-            txttendangnhap.Enabled = giaTri;
-            txtmatkhau.Enabled = giaTri;
-            cboquyenhan.Enabled = giaTri;
-            btnthem.Enabled = !giaTri;
-            btnsua.Enabled = !giaTri;
-            btnxoa.Enabled = !giaTri;
-            btntimkiem.Enabled = !giaTri;
-            btnnhap.Enabled = !giaTri;
-            btnxuat.Enabled = !giaTri;
+            btnLuu.Enabled = giaTri;
+            btnHuyBo.Enabled = giaTri;
+            txtHoVaTen.Enabled = giaTri;
+            txtDienThoai.Enabled = giaTri;
+            txtDiaChi.Enabled = giaTri;
+            txtTenDangNhap.Enabled = giaTri;
+            txtMatKhau.Enabled = giaTri;
+            cboQuyenHan.Enabled = giaTri;
+            btnThem.Enabled = !giaTri;
+            btnSua.Enabled = !giaTri;
+            btnXoa.Enabled = !giaTri;
+            btnTimKiem.Enabled = !giaTri;
+            btnNhap.Enabled = !giaTri;
+            btnXuat.Enabled = !giaTri;
         }
         private void frmNhanVien_Load(object sender, EventArgs e)
         {
             BatTatChucNang(false);
-            dgvdanhsachnhanvien.AutoGenerateColumns = false;
+            dataGridView.AutoGenerateColumns = false;
             List<NhanVien> nv = new List<NhanVien>();
             nv = context.NhanVien.ToList();
             BindingSource bindingSource = new BindingSource();
             bindingSource.DataSource = nv;
-            txthoten.DataBindings.Clear();
-            txthoten.DataBindings.Add("Text", bindingSource, "HoVaTen", false, DataSourceUpdateMode.Never);
+            txtHoVaTen.DataBindings.Clear();
+            txtHoVaTen.DataBindings.Add("Text", bindingSource, "HoVaTen", false, DataSourceUpdateMode.Never);
             // Tương tự đối với txtDienThoai, txtDiaChi, txtTenDangNhap
-            txtdienthoai.DataBindings.Clear();
-            txtdienthoai.DataBindings.Add("Text", bindingSource, "DienThoai",false, DataSourceUpdateMode.Never);
-
-            txtdiachi.DataBindings.Clear();
-            txtdiachi.DataBindings.Add("Text", bindingSource, "DiaChi",false, DataSourceUpdateMode.Never);
-
-            txtdiachi.DataBindings.Add("Text", bindingSource, "TendangNhap", false, DataSourceUpdateMode.Never);
-            cboquyenhan.DataBindings.Clear();
-
-            cboquyenhan.DataBindings.Add("SelectedIndex", bindingSource, "QuyenHan", false, DataSourceUpdateMode.Never);
-            dgvdanhsachnhanvien.DataSource = bindingSource;
+            cboQuyenHan.DataBindings.Clear();
+            cboQuyenHan.DataBindings.Add("SelectedIndex", bindingSource, "QuyenHan", false, DataSourceUpdateMode.Never);
+            dataGridView.DataSource = bindingSource;
         }
 
-        private void btnthem_Click(object sender, EventArgs e)
+
+
+        private void groupBox1_Enter(object sender, EventArgs e)
         {
+
+        }
+
+        private void btnThem_Click(object sender, EventArgs e)
+        {
+
             xuLyThem = true;
             BatTatChucNang(true);
-            txthoten.Clear();
-            txtdienthoai.Clear();
-            txtdiachi.Clear();
-            txttendangnhap.Clear();
-            txtmatkhau.Clear();
-            cboquyenhan.Text = "";
+            txtHoVaTen.Clear();
+            txtDienThoai.Clear();
+            txtDiaChi.Clear();
+            txtTenDangNhap.Clear();
+            txtMatKhau.Clear();
+            cboQuyenHan.Text = "";
+
+
         }
 
-        private void btnsua_Click(object sender, EventArgs e)
+        private void btnSua_Click(object sender, EventArgs e)
         {
-            {
-                xuLyThem = false;
-                BatTatChucNang(true);
-                id = Convert.ToInt32(dgvdanhsachnhanvien.CurrentRow.Cells["ID"].Value.ToString());
-            }
+            xuLyThem = false;
+            BatTatChucNang(true);
+            id = Convert.ToInt32(dataGridView.CurrentRow.Cells["ID"].Value.ToString());
         }
 
-        private void btnluu_Click(object sender, EventArgs e)
+        private void btnLuu_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txthoten.Text))
+            if (string.IsNullOrWhiteSpace(txtHoVaTen.Text))
                 MessageBox.Show("Vui lòng nhập họ và tên nhân viên?", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            else if (string.IsNullOrWhiteSpace(txttendangnhap.Text))
+            else if (string.IsNullOrWhiteSpace(txtTenDangNhap.Text))
                 MessageBox.Show("Vui lòng nhập tên đăng nhập?", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            else if (string.IsNullOrWhiteSpace(cboquyenhan.Text))
+            else if (string.IsNullOrWhiteSpace(cboQuyenHan.Text))
                 MessageBox.Show("Vui lòng chọn quyền hạn cho nhân viên?", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             else
             {
                 if (xuLyThem)
                 {
-                    if (string.IsNullOrWhiteSpace(txtmatkhau.Text))
+                    if (string.IsNullOrWhiteSpace(txtMatKhau.Text))
                         MessageBox.Show("Vui lòng nhập mật khẩu?", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     else
                     {
                         NhanVien nv = new NhanVien();
-                        nv.HoVaTen = txthoten.Text;
-                        nv.DienThoai = txtdienthoai.Text;
-                        nv.DiaChi = txtdiachi.Text;
-                        nv.TenDangNhap = txttendangnhap.Text;
-                        nv.MatKhau = BC.HashPassword(txtmatkhau.Text); // Mã hóa mật khẩu
-                        nv.QuyenHan = cboquyenhan.SelectedIndex == 0 ? true : false;
+                        nv.HoVaTen = txtHoVaTen.Text;
+                        nv.DienThoai = txtDienThoai.Text;
+                        nv.DiaChi = txtDiaChi.Text;
+                        nv.TenDangNhap = txtTenDangNhap.Text;
+                        nv.MatKhau = BC.HashPassword(txtMatKhau.Text); // Mã hóa mật khẩu
+                        nv.QuyenHan = cboQuyenHan.SelectedIndex == 0 ? true : false;
                         context.NhanVien.Add(nv);
                         context.SaveChanges();
                     }
@@ -115,28 +117,29 @@ namespace QuanLybanHang.Forms
                     NhanVien nv = context.NhanVien.Find(id);
                     if (nv != null)
                     {
-                        nv.HoVaTen = txthoten.Text;
-                        nv.DienThoai = txtdienthoai.Text;
-                        nv.DiaChi = txtdiachi.Text;
-                        nv.TenDangNhap = txttendangnhap.Text;
-                        nv.QuyenHan = cboquyenhan.SelectedIndex == 0 ? true : false;
+                        nv.HoVaTen = txtHoVaTen.Text;
+                        nv.DienThoai = txtDienThoai.Text;
+                        nv.DiaChi = txtDiaChi.Text;
+                        nv.TenDangNhap = txtTenDangNhap.Text;
+                        nv.QuyenHan = cboQuyenHan.SelectedIndex == 0 ? true : false;
                         context.NhanVien.Update(nv);
-                        if (string.IsNullOrEmpty(txtmatkhau.Text))
+                        if (string.IsNullOrEmpty(txtMatKhau.Text))
                             context.Entry(nv).Property(x => x.MatKhau).IsModified = false; // Giữ nguyên mật khẩu cũ
                         else
-                            nv.MatKhau = BC.HashPassword(txtmatkhau.Text);// Cập nhật mật khẩu mới
+                            nv.MatKhau = BC.HashPassword(txtMatKhau.Text); // Cập nhật mật khẩu mới
                         context.SaveChanges();
                     }
                 }
                 frmNhanVien_Load(sender, e);
             }
+
         }
 
-        private void btnxoa_Click(object sender, EventArgs e)
+        private void btnXoa_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Xác nhận xóa nhân viên " + txthoten.Text + "?", "Xóa", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            if (MessageBox.Show("Xác nhận xóa nhân viên " + txtHoVaTen.Text + "?", "Xóa", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                id = Convert.ToInt32(dgvdanhsachnhanvien.CurrentRow.Cells["ID"].Value.ToString());
+                id = Convert.ToInt32(dataGridView.CurrentRow.Cells["ID"].Value.ToString());
                 NhanVien nv = context.NhanVien.Find(id);
                 if (nv != null)
                 {
@@ -145,11 +148,13 @@ namespace QuanLybanHang.Forms
                 context.SaveChanges();
                 frmNhanVien_Load(sender, e);
             }
+
         }
 
-        private void btnhuybo_Click(object sender, EventArgs e)
+        private void btnHuyBo_Click(object sender, EventArgs e)
         {
             frmNhanVien_Load(sender, e);
+
         }
     }
 }

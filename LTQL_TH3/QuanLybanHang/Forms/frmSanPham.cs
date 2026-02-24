@@ -1,17 +1,16 @@
-﻿using QuanLybanHang.Data;
-using System.Data;
-using QuanLyBanHang;
+﻿using QuanLyBanHang.Data;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
-using QuanLyBanHang;
-
+using System.Text.RegularExpressions;
+using System.Text;
 
 namespace QuanLyBanHang.Forms
 {
@@ -25,6 +24,22 @@ namespace QuanLyBanHang.Forms
         {
             InitializeComponent();
         }
+
+
+        
+        public class DanhSachSanPham
+        {
+            public int ID { get; set; }
+            public int HangSanXuatID { get; set; }
+            public string TenHangSanXuat { get; set; }  // Thêm 
+            public int LoaiSanPhamID { get; set; }
+            public string TenLoai { get; set; }         // Thêm 
+            public string TenSanPham { get; set; }
+            public int DonGia { get; set; }
+            public int SoLuong { get; set; }
+            public string? HinhAnh { get; set; }
+            public string? MoTa { get; set; }
+        } 
         private void BatTatChucNang(bool giaTri)
         {
             btnLuu.Enabled = giaTri;
@@ -59,30 +74,33 @@ namespace QuanLyBanHang.Forms
             cboHangSanXuat.DataSource = null;
             cboHangSanXuat.DataSource = context.HangSanXuat.ToList();
             cboHangSanXuat.ValueMember = "ID";
-            cboHangSanXuat.DisplayMember = "Tenhangsanxuat ";
+            cboHangSanXuat.DisplayMember = "TenHangSanXuat";
             cboHangSanXuat.SelectedIndex = -1;
         }
         private void frmSanPham_Load(object sender, EventArgs e)
         {
-            BatTatChucNang(false);
+
+
             LayLoaiSanPhamVaoComboBox();
             LayHangSanXuatVaoComboBox();
+            BatTatChucNang(false);
 
             dataGridView.AutoGenerateColumns = false;
 
-            List<DanhSachSanPham> sp = new List<DanhSachSanPham>();
-            sp = context.SanPham.Select(r => new DanhSachSanPham
-            {
-                ID = r.ID,
-                LoaiSanPhamID = r.LoaiSanPhamID,
-                TenLoai = r.Loaisanpham.TenLoai,
-                HangSanXuatID = r.HangSanXuatID,
-                TenHangSanXuat = r.Hangsanxuat.TenHangSanXuat,
-                TenSanPham = r.TenSanPham,
-                SoLuong = r.SoLuong,
-                DonGia = r.DonGia,
-                HinhAnh = r.HinhAnh
-            }).ToList();
+            List<DanhSachSanPham> sp = context.SanPham
+                .Select(r => new DanhSachSanPham
+                {
+                    ID = r.ID,
+                    LoaiSanPhamID = r.LoaiSanPhamID,
+                    TenLoai = r.LoaiSanPham.TenLoai,
+                    HangSanXuatID = r.HangSanXuatID,
+                    TenHangSanXuat = r.HangSanXuat.TenHangSanXuat,
+                    TenSanPham = r.TenSanPham,
+                    SoLuong = r.SoLuong,
+                    DonGia = r.DonGia,
+                    MoTa = r.MoTa,
+                    HinhAnh = r.HinhAnh
+                }).ToList();
 
             BindingSource bindingSource = new BindingSource();
             bindingSource.DataSource = sp;
@@ -99,7 +117,13 @@ namespace QuanLyBanHang.Forms
 
             // Hãng sản xuất
             cboHangSanXuat.DataBindings.Clear();
-            cboHangSanXuat.DataBindings.Add("SelectedValue", bindingSource,"HangSanXuatID", false, DataSourceUpdateMode.Never);
+            cboHangSanXuat.DataBindings.Add(
+                "SelectedValue",
+                bindingSource,
+                "HangSanXuatID",
+                false,
+                DataSourceUpdateMode.Never
+            );
 
             // Tên sản phẩm
             txtTenSanPham.DataBindings.Clear();
@@ -207,13 +231,13 @@ namespace QuanLyBanHang.Forms
             {
                 if (xuLyThem)
                 {
-                    sanpham sp = new sanpham();
+                    SanPham sp = new SanPham();
                     // Tương tự với các form đã thực hiện
                     context.SaveChanges();
                 }
                 else
                 {
-                    sanpham sp = context.SanPham.Find(id);
+                    SanPham sp = context.SanPham.Find(id);
                     if (sp != null)
                     {
                         // Tương tự với các form đã thực hiện
@@ -250,7 +274,7 @@ namespace QuanLyBanHang.Forms
 DialogResult.Yes)
             {
                 id = Convert.ToInt32(dataGridView.CurrentRow.Cells["ID"].Value.ToString());
-                sanpham sp = context.SanPham.Find(id);
+                SanPham sp = context.SanPham.Find(id);
                 if (sp != null)
                 {
                     context.SanPham.Remove(sp);
@@ -278,7 +302,7 @@ DialogResult.Yes)
                 string fileSavePath = Path.Combine(imagesFolder, fileName.GenerateSlug() + ext);
                 File.Copy(openFileDialog.FileName, fileSavePath, true);
                 id = Convert.ToInt32(dataGridView.CurrentRow.Cells["ID"].Value.ToString());
-                sanpham sp = context.SanPham.Find(id); sp.HinhAnh = fileName.GenerateSlug() + ext;
+                SanPham sp = context.SanPham.Find(id); sp.HinhAnh = fileName.GenerateSlug() + ext;
                 context.SanPham.Update(sp);
                 context.SaveChanges();
                 frmSanPham_Load(sender, e);
@@ -288,11 +312,6 @@ DialogResult.Yes)
         private void btnThoat_Click(object sender, EventArgs e)
         {
             this.Close();
-        }
-
-        private void frmSanPham_Load_1(object sender, EventArgs e)
-        {
-
         }
     }
 }

@@ -1,16 +1,18 @@
 ﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLybanHang.Data
+namespace QuanLyBanHang.Data
 {
-    public class Loaisanpham
+    public class LoaiSanPham
     {
-        public int ID { get; set; }
+        public int ID {  get; set; }
         public string TenLoai { get; set; }
-        public virtual ObservableCollectionListSource<sanpham> sanpham { get;  } = new();
+        public virtual ObservableCollectionListSource<SanPham> SanPham { get; } = new();
     }
 }
+

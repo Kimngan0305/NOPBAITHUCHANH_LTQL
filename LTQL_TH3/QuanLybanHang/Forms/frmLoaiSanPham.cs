@@ -1,135 +1,150 @@
-﻿using QuanLybanHang.Data;
+﻿using QuanLyBanHang.Data;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace QuanLybanHang.Forms
+namespace QuanLyBanHang.Forms // Đã bỏ dấu ';' dư thừa và khớp với tên thư mục 'Forms'
 {
-    public partial class frmLoaiSanPham : Form
+    public partial class frmLoaiSanPham : Form // Đảm bảo tên lớp khớp với file
     {
+        //  Khai báo biến toàn cục
+        QLBHDbContext context = new QLBHDbContext();
+        bool xuLyThem = false;
+        int id;
+
         public frmLoaiSanPham()
         {
             InitializeComponent();
         }
-        QLBHDbContext context = new QLBHDbContext(); // Khởi tạo biến ngữ cảnh CSDL 
-        bool xuLyThem = false; // Kiểm tra có nhấn vào nút Thêm hay không? 
-        int id;
+
+        //  Hàm bật/tắt các điều khiển để tránh bấm nhầm
         private void BatTatChucNang(bool giaTri)
         {
-            btnluu.Enabled = giaTri;
-            btnhuybo.Enabled = giaTri;
-            txttenloai.Enabled = giaTri;
-
-            btnthem.Enabled = !giaTri;
-            btnsua.Enabled = !giaTri;
-            btnxoa.Enabled = !giaTri;
+            btnLuu.Enabled = giaTri;
+            btnHuyBo.Enabled = giaTri;
+            txtTenLoai.Enabled = giaTri;
+            btnThem.Enabled = !giaTri;
+            btnSua.Enabled = !giaTri;
+            btnXoa.Enabled = !giaTri;
         }
 
+        // Sự kiện chạy khi Form bắt đầu mở lên
         private void frmLoaiSanPham_Load(object sender, EventArgs e)
         {
             BatTatChucNang(false);
+            try
+            {
+                // Tải dữ liệu từ CSDL
+                var lsp = context.LoaiSanPham.ToList();
+                BindingSource bindingSource = new BindingSource();
+                bindingSource.DataSource = lsp;
 
-            List<Loaisanpham> lsp = new List<Loaisanpham>();
-            lsp = context.LoaiSanPham.ToList();
+                // Xóa các liên kết cũ để tránh lỗi dữ liệu đè lên nhau
+                txtTenLoai.DataBindings.Clear();
+                // Liên kết TextBox với cột TenLoai
+                txtTenLoai.DataBindings.Add("Text", bindingSource, "TenLoai", false, DataSourceUpdateMode.Never);
 
-            BindingSource bindingSource = new BindingSource();
-            bindingSource.DataSource = lsp;
-
-            txttenloai.DataBindings.Clear();
-            txttenloai.DataBindings.Add("Text", bindingSource, "TenLoai", false, DataSourceUpdateMode.Never);
-
-            dgvdanhsachloai.DataSource = bindingSource;
+                // Gán dữ liệu vào lưới hiển thị
+                dataGridView.DataSource = bindingSource;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi kết nối CSDL: " + ex.Message);
+            }
         }
 
-        private void btnthem_Click(object sender, EventArgs e)
+        private void btnThem_Click(object sender, EventArgs e)
         {
             xuLyThem = true;
             BatTatChucNang(true);
-            txttenloai.Clear();
+            txtTenLoai.Clear();
+            txtTenLoai.Focus();
         }
 
-        private void btnsua_Click(object sender, EventArgs e)
+        private void btnSua_Click(object sender, EventArgs e)
         {
+            if (dataGridView.CurrentRow == null)
+            {
+                MessageBox.Show("Vui lòng chọn loại sản phẩm cần sửa!");
+                return;
+            }
+
             xuLyThem = false;
             BatTatChucNang(true);
-            id = Convert.ToInt32(dgvdanhsachloai.CurrentRow.Cells["ID"].Value.ToString());
+            // Lấy ID từ dòng đang chọn trên lưới
+            id = Convert.ToInt32(dataGridView.CurrentRow.Cells["ID"].Value);
         }
 
-        private void btnxoa_Click(object sender, EventArgs e)
+        private void btnLuu_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Xác nhận xóa loại sản phẩm?", "Xóa", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            if (string.IsNullOrWhiteSpace(txtTenLoai.Text))
             {
-                id = Convert.ToInt32(dgvdanhsachloai.CurrentRow.Cells["ID"].Value.ToString());
-                Loaisanpham lsp = context.LoaiSanPham.Find(id);
-                if (lsp != null)
-                {
-                    context.LoaiSanPham.Remove(lsp);
-                }
-                context.SaveChanges();
-
-                frmLoaiSanPham_Load(sender, e);
+                MessageBox.Show("Vui lòng nhập tên loại sản phẩm!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
-        }
 
-        private void btnluu_Click(object sender, EventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(txttenloai.Text))
-                MessageBox.Show("Vui lòng nhập tên loại sản phẩm?", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            else
+            try
             {
                 if (xuLyThem)
                 {
-                    Loaisanpham lsp = new Loaisanpham();
-                    lsp.TenLoai = txttenloai.Text;
+                    LoaiSanPham lsp = new LoaiSanPham { TenLoai = txtTenLoai.Text };
                     context.LoaiSanPham.Add(lsp);
-
-                    context.SaveChanges();
                 }
                 else
                 {
-                    Loaisanpham lsp = context.LoaiSanPham.Find(id);
+                    var lsp = context.LoaiSanPham.Find(id);
                     if (lsp != null)
                     {
-                        lsp.TenLoai = txttenloai.Text;
-                        context.LoaiSanPham.Update(lsp);
-
-                        context.SaveChanges();
+                        lsp.TenLoai = txtTenLoai.Text;
                     }
                 }
 
-                frmLoaiSanPham_Load(sender, e);
+                context.SaveChanges();
+                MessageBox.Show("Đã lưu thành công!");
+                frmLoaiSanPham_Load(sender, e); // Tải lại danh sách mới
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi lưu: " + ex.Message);
             }
         }
 
-        private void btnhuybo_Click(object sender, EventArgs e)
+        private void btnXoa_Click(object sender, EventArgs e)
         {
+            if (dataGridView.CurrentRow == null) return;
 
+            if (MessageBox.Show("Xác nhận xóa loại sản phẩm này?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                try
+                {
+                    id = Convert.ToInt32(dataGridView.CurrentRow.Cells["ID"].Value);
+                    var lsp = context.LoaiSanPham.Find(id);
+                    if (lsp != null)
+                    {
+                        context.LoaiSanPham.Remove(lsp);
+                        context.SaveChanges();
+                        frmLoaiSanPham_Load(sender, e);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Lỗi khi xóa: " + ex.Message);
+                }
+            }
+        }
+
+        private void btnHuyBo_Click(object sender, EventArgs e)
+        {
             frmLoaiSanPham_Load(sender, e);
         }
 
-        private void btnthoat_Click(object sender, EventArgs e)
+        private void btnThoat_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Xác nhận xóa loại sản phẩm?", "Xóa", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-            {
-                id = Convert.ToInt32(dgvdanhsachloai.CurrentRow.Cells["ID"].Value.ToString());
-                Loaisanpham lsp = context.LoaiSanPham.Find(id);
-                if (lsp != null)
-                {
-                    context.LoaiSanPham.Remove(lsp);
-                }
-                context.SaveChanges();
-
-                frmLoaiSanPham_Load(sender, e);
-            }
+            this.Close();
         }
 
-        private void frmLoaiSanPham_Load_1(object sender, EventArgs e)
+        private void dataGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
         }

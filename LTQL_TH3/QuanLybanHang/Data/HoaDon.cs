@@ -5,7 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuanLybanHang.Data
+
+namespace QuanLyBanHang.Data
 {
     public class HoaDon
     {
@@ -13,10 +14,10 @@ namespace QuanLybanHang.Data
         public int NhanVienID { get; set; }
         public int KhachHangID { get; set; }
         public DateTime NgayLap { get; set; }
-        public string? GhiChuHoaDon { get; set; }
-
-        public virtual ObservableCollectionListSource<Hoadonchitiet> HoaDon_ChiTiet { get; } = new();
-        public virtual Khachhang KhachHang { get; set; } = null!;
+        public string GhiChuHoaDon { get; set; }
+        public virtual ObservableCollectionListSource<HoaDon_ChiTiet> HoaDon_ChiTiet { get; } = new();
+        public virtual KhachHang KhachHang { get; set; } = null!;
         public virtual NhanVien NhanVien { get; set; } = null!;
     }
 }
+
